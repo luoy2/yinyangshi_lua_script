@@ -67,77 +67,20 @@ function main()
       -------------------------------------------御魂10--------------------------------------
     elseif results['100'] == '2' then
       yh_ret,yh_results = showUI("yuhun.json")
-      --------------------------------队长2人---------------------------------
-      mark_1 = tonumber(yh_results['201']) + 2
-      mark_2 = tonumber(yh_results['202']) + 2
-      mark_3 = tonumber(yh_results['203']) + 2
-			if mark_2 == 5 then mark_2 = 6 end
-			if mark_3 == 5 then mark_3 = 6 end
-      mark_case = {mark_1, mark_2, mark_3}
-      printTable(mark_case)
-      if yh_results["101"]== "0" then
-        toast("开始魂10自动战斗，请进入组队界面后创建队伍，邀请基友"); 
-        mSleep(2000)
-        while true do 
-          team_leader(mark_case, 2)
-        end
-        --------------------------------队长3人---------------------------------
-      elseif yh_results["101"] == "1" then
-        toast("开始魂10自动战斗，请进入组队界面后创建队伍，邀请基友"); 
-        mSleep(2000)
-        while true do 
-          team_leader(mark_case, 3)
-        end
-        --------------------------------加入队伍--------------------------------
-      elseif yh_results['101'] == '2' then
-        task = "加入队伍"
-        --------------------------------等待邀请---------------------------------
-      elseif yh_results["101"] == "3" then
-        toast("开始魂10自动战斗，请等待基友邀请"); 
-        sleepRandomLag(2000)
-        while true do 
-          accept_invite(mark_case)
-        end
-        --[[	
-      elseif yh_results["101"] == "4" then
-        recursive_task()
-      elseif yh_results["101"] == "5" then
-        while true do 
-          solo_yh(mark_case)
-        end
-        --]]
-      else
-        dialog("你tm什么都没设置，玩儿我吧？")
-        lua_exit()
-      end
+			return main_yh(yh_ret,yh_results)
       -------------------------------------------阴阳寮续车--------------------------------------	
     elseif results['100'] == '3' then
       xu_che()
       -------------------------------------------探索--------------------------------------
     elseif results['100'] == '4' then
       ts_ret,ts_results = showUI("tansuo.json")
-      if ts_ret==0 then	
-        toast("您选择了取消，停止脚本运行")
-        lua_exit()
-      end
-      local fight_times = tonumber(ts_results['99'])
-      local skip_lines = tonumber(ts_results['100'])
-      local search_times = tonumber(ts_results['101'])
-      if fight_times == 0 then
-        fight_times = 999999
-      end
-      tansuo(fight_times, search_times, skip_lines)
+			return main_tansuo(ts_ret, ts_results)
+      
       -------------------------------------------业原火--------------------------------------	
     elseif results['100'] == '5' then
       enter_yeyuanhuo()
       yyh_ret,yyh_results = showUI("yeyuanhuo.json")
-      if yyh_ret==0 then	
-        toast("您选择了取消，停止脚本运行")
-        lua_exit()
-      end
-      local times = tonumber(yyh_results['100'])
-      local difficulty = tonumber(yyh_results['101'])+1
-      yeyuanhuo(times, difficulty)
+			main_yeyuanhuo(yyh_ret,yyh_results)
       -------------------------------------------妖气封印--------------------------------------	
     elseif results['100'] == '6' then
       yqfy_ret,yqfy_results = showUI("yqfy.json")
