@@ -2,76 +2,27 @@ join_party = switch {
   [1] = function () tap(1700,630) end, --加入队伍1
   [2] = function () tap(1700,790) end,	--加入队伍2
   [3] = function () tap(1700,960) end,	--加入队伍3
-	[4] = function ()	tap(1700,1120) end	--加入队伍4
+  [4] = function ()	tap(1700,1120) end	--加入队伍4
 }
 
 
+-----------------------------------------------------------------------------------------------------------
 
-function enter_party1()
-		local current_state = check_current_state()
-		if current_state == 'party' then
-		elseif current_state == 1 then		
-			accept_quest()
-			local x, y = myFindColor(组队)
-			if x > -1 then
-				tap(x, y)
-				mSleep(500)
-			else                               
-				toast("没找到组队 ╮（╯▽╰）╭");
-			end
-			mSleep(1000)
-			tap(400, 1250)
-			mSleep(500)
-			return enter_party()
-		--主界面
-		elseif current_state == 21 then
-			my_toast(id, '正在战斗中！等待完成战斗进入主界面。。')
-			end_combat(0)
-			mSleep(2000)
-			return enter_party()
-		elseif current_state == 22 then
-			my_toast(id, '在探索副本')
-			tap(80, 100)												--退出探索本
-			mSleep(1500)
-			tap(1244, 842)
-			mSleep(2000)
-			tap(1244, 842)
-			mSleep(3000)
-			enter_party()
-			return enter_party()
-		elseif current_state == 3 then
-			my_toast(id, '在探索界面')
-			local x, y = myFindColor(顶点退出)
-			sysLogLst(x, y)
-			tap(x, y)
-			mSleep(3000)
-			enter_party()
-		elseif current_state == 4 then
-			local redcross_x, redcross_y = myFindColor(右上红叉)
-			tap(redcross_x, redcross_y)
-			mSleep(1000)
-			return enter_party()
-		else
-			my_toast(id, '请手动进入主界面！')
-			mSleep(2000)
-			return enter_party()
-		end
-end
 
 function enter_party()
-local current_state = check_current_state()
-if current_state == 'party' then
-else
-	enter_main_function()
-	mSleep(500)
-	sub_function:case('party')
-	mSleep(1000)
-	return enter_party()
+  local current_state = check_current_state()
+  if current_state == 'party' then
+  else
+    enter_main_function()
+		mSleep(500)
+		sub_function:case('party')
+		mSleep(1000)
+		return enter_party()
+	end
 end
-end
-
-
-
+  
+  
+  
 function refresh()
 	tap(1200, 1300)
 	sleepRandomLag(500)
@@ -91,10 +42,11 @@ function refresh()
 			refresh()
 		end
 	else
-	sleepRandomLag(200)
-	refresh()
+		sleepRandomLag(200)
+		refresh()
 	end
 end
+
 ------------------------------------------------------妖气封印--------------------------------------------------------
 function shiju(time_left)
 	if time_left <= 0 then
@@ -110,16 +62,16 @@ function shiju(time_left)
 		sysLog('等待'.._G.time_left..'毫秒')
 	end
 end
-
-------------------------------------------------------妖气封印--------------------------------------------------------
+  
+	------------------------------------------------------妖气封印--------------------------------------------------------
 function yqfyFindColor(color, position)
 	accept_quest()
 	local x, y = findMultiColorInRegionFuzzy(color[1], color[2], color[3], position[1], position[2], position[3], position[4])
 	return x, y
-	end
-
-
-
+end
+  
+  
+  
 function find_yaoqi(input_ss)
 	keepScreen(true)
 	for i = 1,4,1 do
@@ -131,37 +83,85 @@ function find_yaoqi(input_ss)
 	end
 	keepScreen(false)
 end
-
-
-function refresh_yaoqi(input_ss_table)
-	tap(1200, 1300)
-	sleepRandomLag(500)
-	accept_quest()
-	for k,v in pairs(input_ss_table) do
-		local slot = find_yaoqi(v)
-		if slot ~= nil then
-			join_party:case(slot)
-			if_outof_sushi()
-			sleepRandomLag(1000)
-			accept_quest()
-			keepScreen(false)
-			
-			local refresh_x, refresh_y = myFindColor(组队刷新)  --刷新黄色 如果未找到说明在队伍
-			sysLog(refresh_x)
-			if refresh_x == -1 then
-				my_toast(id, "已加入队伍")
-				start_combat(0)
-				return true
-			else
-				sleepRandomLag(200)
-				return refresh_yaoqi(input_ss_table)
-			end
-			
+  
+  
+  function refresh_yaoqi(input_ss_table)
+    tap(1200, 1300)
+    sleepRandomLag(500)
+    accept_quest()
+    for k,v in pairs(input_ss_table) do
+      local slot = find_yaoqi(v)
+      if slot ~= nil then
+        join_party:case(slot)
+        if_outof_sushi()
+        sleepRandomLag(1000)
+        accept_quest()
+        keepScreen(false)
+        
+        local refresh_x, refresh_y = myFindColor(组队刷新)  --刷新黄色 如果未找到说明在队伍
+        sysLog(refresh_x)
+        if refresh_x == -1 then
+          my_toast(id, "已加入队伍")
+          start_combat(0)
+          return true
+        else
+          sleepRandomLag(200)
+          return refresh_yaoqi(input_ss_table)
+        end
+        
+      end
+    end
+    sleepRandomLag(200)
+    return refresh_yaoqi(input_ss_table)
+  end
+  
+  
+  
+  function main_yqfy(yqfy_ret, yqfy_results)
+    if yqfy_ret==0 then	
+      toast("您选择了取消，停止脚本运行")
+      lua_exit()
+    end
+    ss_list = {海坊主, 小黑, 二口女, 骨女, 哥哥, 经验, 金币, 椒图, 饿鬼, '石距'}
+		sysLogLst(ss_list)
+    local fight_times = tonumber(yqfy_results['100'])
+    local ss_index = str_split((yqfy_results['101']))														--ui返回选择的项目index
+    _G.time_left = tonumber(yqfy_results['102'])*60*1000												--用户输入的石距剩余时间
+    sysLog(_G.time_left)
+		--初始化战斗次数
+    local current_ss_time = 0
+    -- 如果用户选择战斗次数为0则最大化战斗次数
+		if fight_times == 0 then
+      fight_times = 999999
+    end							
+    ss_target_table = {}
+		--ui返回选择的0_base_index,需要+1才能用在lua table里面
+    for k,v in pairs(ss_index) do
+      ss_index[k] = ss_index[k] + 1
+      table.insert(ss_target_table, ss_list[ss_index[k]])
+    end	
+    sysLog(tablelength(ss_target_table))
+    
+    
+    if table.contains(ss_target_table, '石距') then
+      sysLog('需要打章鱼')
+      table.remove(ss_target_table, tablelength(ss_target_table))
+			if_shiju = true
 		end
-	end
-	sleepRandomLag(200)
-	return refresh_yaoqi(input_ss_table)
-end
-
-
-
+		
+      local initial_t = mTime()
+      while current_ss_time < fight_times do
+				if if_shiju then
+					_G.time_left = _G.time_left - (mTime() - initial_t)
+					sysLog(_G.time_left)
+					shiju(_G.time_left)
+				end
+        enter_party()
+        tap(400, 1230)
+        my_toast(id, '开始刷碎片!')
+        mSleep(500)
+        refresh_yaoqi(ss_target_table)
+        current_ss_time = current_ss_time + 1
+        sysLog('刷怪次数： '..current_ss_time..' 总次数： '..fight_times)
+    end
+  end

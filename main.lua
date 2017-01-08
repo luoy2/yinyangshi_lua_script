@@ -14,6 +14,7 @@ require "xuche"
 require "tupo"
 require "spec"
 require "richang"
+require '悬赏封印'
 pos = require("bblibs/pos")
 
 dict = createOcrDict("dict.txt") 
@@ -35,23 +36,8 @@ function main()
     -------------------------------------------个人突破--------------------------------------
     if results['100'] == '0' then	
       tupo_ret,tupo_results = showUI("tupo.json")
-      enter_tupo()
-      accept_quest()
-      local tupo_avaliable_ocr = ocrText(dict, 650,1166,696,1203, {"0x37332e-0x505050"}, 92, 1, 1) -- 表示范围内横向搜索，以table形式返回识别到的所有结果及其坐标
-      local tupo_avaliable = 0
-      for k,v in pairs(tupo_avaliable_ocr) do
-        sysLog(string.format('{x=%d, y=%d, text=%s}', v.x, v.y, v.text))
-        tupo_avaliable = tupo_avaliable*10 + tonumber(v.text)
-      end
-      my_toast(id, '挑战卷个数: '..tupo_avaliable)
-      sysLog('挑战卷个数: '..tupo_avaliable)		
-      if tupo_results['100'] == '0' then
-        tupo(3, tupo_avaliable)
-      elseif tupo_results['100'] == '1' then
-        tupo(6, tupo_avaliable)
-      else
-        tupo(9, tupo_avaliable)
-      end
+			return main_tupo(tupo_ret,tupo_results)
+
       
       -------------------------------------------石距--------------------------------------
     elseif results['100'] == '1' then
@@ -80,224 +66,16 @@ function main()
     elseif results['100'] == '5' then
       enter_yeyuanhuo()
       yyh_ret,yyh_results = showUI("yeyuanhuo.json")
-			main_yeyuanhuo(yyh_ret,yyh_results)
+			return main_yeyuanhuo(yyh_ret,yyh_results)
       -------------------------------------------妖气封印--------------------------------------	
     elseif results['100'] == '6' then
       yqfy_ret,yqfy_results = showUI("yqfy.json")
-      if yqfy_ret==0 then	
-        toast("您选择了取消，停止脚本运行")
-        lua_exit()
-      end
-			--[[
-			ss_list = {海坊主, 小黑, 二口女, 骨女, 哥哥, 经验, 金币, 椒图, 饿鬼}
-      local fight_times = tonumber(yqfy_results['100'])
-      local ss_index = str_split((yqfy_results['101']))
-      for k,v in pairs(ss_index) do ss_index[k] = ss_index[k]+1 end          -- format index
-      for k,v in pairs(ss_index) do sysLogLst(k,v) end											
-      ss_target_table = {}
-      for k,v in pairs(ss_index) do table.insert(ss_target_table, ss_list[v]) end	
-      if fight_times == 0 then
-        fight_times = 999999
-      end
-      local current_ss_time = 0
-      while current_ss_time <= fight_times do
-        enter_party()
-        tap(400, 1230)
-        my_toast(id, '开始刷碎片!')
-        mSleep(500)
-        refresh_yaoqi(ss_target_table)
-        current_ss_time = current_ss_time + 1
-        sysLog('刷怪次数： '..current_ss_time..' 总次数： '..fight_times)
-      end
-			--]]
-			ss_list = {海坊主, 小黑, 二口女, 骨女, 哥哥, 经验, 金币, 椒图, 饿鬼, '石距'}
-      local fight_times = tonumber(yqfy_results['100'])
-      local ss_index = str_split((yqfy_results['101']))
-			_G.time_left = tonumber(yqfy_results['102'])*60*1000
-			sysLog(_G.time_left)
-			local current_ss_time = 0
-			if fight_times == 0 then
-        fight_times = 999999
-      end							
-      ss_target_table = {}
-      for k,v in pairs(ss_index) do 
-				ss_index[k] = ss_index[k] + 1
-				table.insert(ss_target_table, ss_list[ss_index[k]])
-			end	
-			sysLog(tablelength(ss_target_table))
-			
-			
-			if table.contains(ss_target_table, '石距') then
-				sysLog('需要打章鱼')
-				table.remove(ss_target_table, tablelength(ss_target_table))
-				local initial_t = mTime()
-				while current_ss_time <= fight_times do
-					_G.time_left = _G.time_left - (mTime() - initial_t)
-					sysLog(_G.time_left)
-					shiju(_G.time_left)
-					enter_party()
-					tap(400, 1230)
-					my_toast(id, '开始刷碎片!')
-					mSleep(500)
-					refresh_yaoqi(ss_target_table)
-					current_ss_time = current_ss_time + 1
-					sysLog('刷怪次数： '..current_ss_time..' 总次数： '..fight_times)
-				end
-      else
-					while current_ss_time <= fight_times do
-					enter_party()
-					tap(400, 1230)
-					my_toast(id, '开始刷碎片!')
-					mSleep(500)
-					refresh_yaoqi(ss_target_table)
-					current_ss_time = current_ss_time + 1
-					sysLog('刷怪次数： '..current_ss_time..' 总次数： '..fight_times)
-				end
-			end
+			return main_yqfy(yqfy_ret, yqfy_results)
       
       -------------------------------------------日常杂项--------------------------------------	
     elseif results['100'] == '7' then
       richang_ret,richang_results = showUI("richang.json")
-      if richang_ret==0 then	
-        toast("您选择了取消，停止脚本运行")
-        lua_exit()
-      end
-      sysLog(richang_results['101'])
-      if richang_results['101'] == '4' then
-				if richang_results['100'] == '0' then
-          give_friend_heart()
-        elseif richang_results['100'] == '1' then
-          buy_toilet_paper()
-        end
-        mSleep(1000)
-				enter_main_function()
-				lua_exit()
-				
-			elseif richang_results['101'] == '0' then											--肝狗粮,结界突破,妖气封印,挂业原火
-        ts_ret,ts_results = showUI("tansuo.json")
-        if ts_ret==0 then	
-          toast("您选择了取消，停止脚本运行")
-          lua_exit()
-        end
-        local fight_times = tonumber(ts_results['99'])
-        local skip_lines = tonumber(ts_results['100'])
-        local search_times = tonumber(ts_results['101'])
-        if fight_times == 0 then
-          fight_times = 999999
-        end
-        
-        if richang_results['100'] == '0' then
-          give_friend_heart()
-        elseif richang_results['100'] == '1' then
-          buy_toilet_paper()
-        end
-        mSleep(1000)
-        tansuo(fight_times, search_times, skip_lines)
-        
-      elseif richang_results['101'] == '1' then			
-        tupo_ret,tupo_results = showUI("tupo.json")
-        if richang_results['100'] == '0' then
-          give_friend_heart()
-        elseif richang_results['100'] == '1' then
-          buy_toilet_paper()
-        end
-        mSleep(1000)
-        
-        enter_tupo()
-        accept_quest()
-        local tupo_avaliable_ocr = ocrText(dict, 650,1166,696,1203, {"0x37332e-0x505050"}, 92, 1, 1) -- 表示范围内横向搜索，以table形式返回识别到的所有结果及其坐标
-        local tupo_avaliable = 0
-        for k,v in pairs(tupo_avaliable_ocr) do
-          sysLog(string.format('{x=%d, y=%d, text=%s}', v.x, v.y, v.text))
-          tupo_avaliable = tupo_avaliable*10 + tonumber(v.text)
-        end
-        my_toast(id, '挑战卷个数: '..tupo_avaliable)
-        sysLog('挑战卷个数: '..tupo_avaliable)		
-        if tupo_results['100'] == '0' then
-          tupo(3, tupo_avaliable)
-        elseif tupo_results['100'] == '1' then
-          tupo(6, tupo_avaliable)
-        else
-          tupo(9, tupo_avaliable)
-        end	
-        
-      elseif richang_results['101'] == '2' then
-        yqfy_ret,yqfy_results = showUI("yqfy.json")
-        if yqfy_ret==0 then	
-          toast("您选择了取消，停止脚本运行")
-          lua_exit()
-        end
-				
-				ss_list = {海坊主, 小黑, 二口女, 骨女, 哥哥, 经验, 金币, 椒图, 饿鬼, '石距'}
-				local fight_times = tonumber(yqfy_results['100'])
-				local ss_index = str_split((yqfy_results['101']))
-				_G.time_left = tonumber(yqfy_results['102'])*60*1000
-				sysLog(_G.time_left)
-				local current_ss_time = 0
-				if fight_times == 0 then
-					fight_times = 999999
-				end							
-				ss_target_table = {}
-				for k,v in pairs(ss_index) do 
-					ss_index[k] = ss_index[k] + 1
-					table.insert(ss_target_table, ss_list[ss_index[k]])
-				end	
-				sysLog(tablelength(ss_target_table))
-				
-        if richang_results['100'] == '0' then
-          give_friend_heart()
-        elseif richang_results['100'] == '1' then
-          buy_toilet_paper()
-        end
-        mSleep(1000)
-				
-				if table.contains(ss_target_table, '石距') then
-					sysLog('需要打章鱼')
-					table.remove(ss_target_table, tablelength(ss_target_table))
-					local initial_t = mTime()
-					while current_ss_time <= fight_times do
-						_G.time_left = _G.time_left - (mTime() - initial_t)
-						sysLog(_G.time_left)
-						shiju(_G.time_left)
-						enter_party()
-						tap(400, 1230)
-						my_toast(id, '开始刷碎片!')
-						mSleep(500)
-						refresh_yaoqi(ss_target_table)
-						current_ss_time = current_ss_time + 1
-						sysLog('刷怪次数： '..current_ss_time..' 总次数： '..fight_times)
-					end
-				else
-						while current_ss_time <= fight_times do
-						enter_party()
-						tap(400, 1230)
-						my_toast(id, '开始刷碎片!')
-						mSleep(500)
-						refresh_yaoqi(ss_target_table)
-						current_ss_time = current_ss_time + 1
-						sysLog('刷怪次数： '..current_ss_time..' 总次数： '..fight_times)
-					end
-				end
-        
-      elseif richang_results['101'] == '3' then
-        enter_yeyuanhuo()
-        yyh_ret,yyh_results = showUI("yeyuanhuo.json")
-        if yyh_ret==0 then	
-          toast("您选择了取消，停止脚本运行")
-          lua_exit()
-        end
-        if richang_results['100'] == '0' then
-          give_friend_heart()
-        elseif richang_results['100'] == '1' then
-          buy_toilet_paper()
-        end
-        mSleep(1000)
-        local times = tonumber(yyh_results['100'])
-        local difficulty = tonumber(yyh_results['101'])+1
-        yeyuanhuo(times, difficulty)
-      end
-      
-      
+			main_richang(richang_ret,richang_results)
       -------------------------------------------开发中--------------------------------------	
     else 
       dialog("你tm什么都没设置，玩儿我吧？")
@@ -310,14 +88,71 @@ function main()
 end
 
 
+--独眼小僧(1)
 
-	
-main()
+--main()
 
 --[[
+enter_main_function()
+my_swip(200, 1250, 1800, 1250, 50)
+local feng_x, feng_y = myFindColor(悬赏)
+if feng_x > -1 then tap(feng_x, feng_y) else sysLog('couldnt find feng') end
+]]--
 
-      
 
+
+
+
+
+
+
+
+
+
+
+
+------------------------------------------------------------------------------
+
+function one_dungeon_fengyin(skip_lines)
+	local bool_table = {}
+	for find_time = 1, 6, 1 do
+		slow_next_scene()  --4次
+		table.insert(bool_table, search_for_fy(0, 10, skip_lines))
+	end
+	for _,v in pairs(bool_table) do
+		if v == true then
+			sysLog('此轮有找到怪')
+			return true
+		else
+			sysLog('此轮没有找到怪')
+		end
+	end
+	return false
+end
+
+
+
+
+function fy_one_monster(monster_chapter, skip_lines)
+	enter_tansuo()
+	choose_chapter(monster_chapter)
+	enter_dungeon()
+	one_dungeon_fengyin(0, 5, skip_lines)
+	mSleep(3000)
+	while one_dungeon_fengyin(0, 5, 0) do 	
+		enter_tansuo()
+		choose_chapter(monster_chapter)
+		enter_dungeon()
+	end
+	enter_main_function()
+	my_toast(id, '封印完成')
+end
+
+fy_one_monster(fy_chapter['shouwu'])
+-----------------------------------------------------------------------------
+
+
+--[[
 find_yaoqi(海坊主)
 find_yaoqi(小黑)
 find_yaoqi(经验)
@@ -327,38 +162,6 @@ find_yaoqi(二口女)
 find_yaoqi(骨女)
 find_yaoqi(哥哥)
 find_yaoqi(饿鬼)
-
-
-
-
-
-yy_x, yy_y = findImageInRegionFuzzy("invite_na.png", 50,555,631,1484,1359, 0);
-if yy_x ~= -1 then        --如果在指定区域找到某图片符合条件
-  tap(yy_x, yy_y);            --那么单击该图片
-  sysLog(yy_x..';'..yy_y)
-else                               --如果找不到符合条件的图片
-  my_toast(id,"未找到符合条件的坐标！");
-  mSleep(1000)
-end
-tap(1052,353)													--点击寄存
-sleepRandomLag(3000)
-tap(110, 1420)  												--点开全部式神
-sleepRandomLag(500)
---tap(351, 1180) 												-- 选择sr
-tap(425, 1312)													--ssr
-sleepRandomLag(1000)
-swip(293, 1400, 1800, 600)  			--拖动酒吞进入寄存
-sleepRandomLag(1000)
-tap(1200, 1030)												-- 点击确认
-sleepRandomLag(1000)
-tap(70, 70)														-- 退出界面
-sleepRandomLag(1000)
-tap(70, 70)
-sleepRandomLag(3000)
-tap(1846, 308)
-toast('开始等待6小时')
-mSleep(6*3600*1000)
-
 --snapshot("invite_na.png", 697,693,805,734); --全屏截图（分辨率1080*1920）
 --]]
 

@@ -8,6 +8,7 @@
 
 
 function get_star(input_table)
+	if if_defeat(input_table) then return 6 end
   for i = 0,5,1 do
     accept_quest()
     x, y = findColorInRegionFuzzy(0xb3a28d, 95, input_table[1]+63*i-2, input_table[2]-2, input_table[1]+63*i+2, input_table[2]+2)
@@ -25,67 +26,66 @@ function get_star(input_table)
   end
 end
 
+function if_defeat(input_table)
+	local x, y = findMultiColorInRegionFuzzy(0xaa3333,"8|19|0xab3534,-26|3|0x260803,-2|34|0x3b0b06", 90, input_table[1]+275,input_table[2]-156, input_table[1]+359 , input_table[2]-63)
+	if x > -1 then
+		return true
+	else
+		return false
+	end
+end
+
+
 
 function tupo_from_less_star(items)
   local output_table = {}
   local sortedKeys = getKeysSortedByValue(items, function(a, b) return a < b end)
   for _, key in ipairs(sortedKeys) do
-    --sysLog(key.." "..items[key])
-    table.insert(output_table, key)
-  end
+		if items[key] < 6 then
+			table.insert(output_table, key)
+		end
+	end
   return output_table
 end
 
 function enter_tupo()
   local current_state = check_current_state()
-  if current_state == 1 then
-    enter_tansuo()
-		mSleep(1000)
+	if current_state == 'tupo' then
+		sleepRandomLag(2000)
+	elseif current_state == 3 then
+		tap(676, 1457)
+		mSleep(200)
+		tap(676, 1457)
+		sleepRandomLag(2000)
 		return enter_tupo()
-	elseif current_state == 21 then
-		end_combat(0)
-		mSleep(1000)
+	else
+		enter_tansuo()
 		return enter_tupo()
-	elseif current_state == 22 then
-		my_toast(id, '在探索副本！')
-		tap(80, 100)												--退出探索本
-		mSleep(1500)
-		tap(1244, 842)
-		return enter_tupo()
-  elseif current_state == 3 then
-    tap(676, 1457)
-    mSleep(200)
-    tap(676, 1457)
-    sleepRandomLag(2000)
-  elseif current_state == 4 then
-    sleepRandomLag(2000)
-  else
-    my_toast(id,'请手动进入探索')
-    sleepRandomLag(2000)
-    return enter_tupo()
-  end
+	end
 end
 
 
 function tupo(refresh_count, total_avaliable)
-	sysLog(refresh_count..'次刷新')
+  sysLog(refresh_count..'次刷新')
   if total_avaliable == 0 then
     my_toast(id, "没有挑战卷")
     lua_exit()
-  end
-  
+  end  
   star_list = {true, true, true,true, true, true,true, true, true}
-	
-	keepScreen(true)
+  keepScreen(true)
   for i = 1,9,1 do
-    star_list[i] = get_star(all_enemy[i])
-    sysLog('结界'..i..'勋章: ' .. get_star(all_enemy[i]))
-    my_toast(id,'结界'..i..'勋章: ' .. get_star(all_enemy[i]))
+		local this_star = get_star(all_enemy[i])
+    star_list[i] = this_star
+    sysLog('结界'..i..'勋章: ' .. this_star)
+    my_toast(id,'结界'..i..'勋章: ' .. this_star)
   end
-  keepScreen(false)
-	
-  tupo_order = tupo_from_less_star(star_list)
-  refresh_state = true
+  keepScreen(false)	
+	tupo_order = tupo_from_less_star(star_list)
+	printTable(tupo_order)
+
+	local max_time = tablelength(tupo_order)
+	sysLog('此轮突破总次数'..max_time)
+  local refresh_state = true
   local j = 1  --从第一次开始
   while refresh_state do
     accept_quest()
@@ -96,8 +96,8 @@ function tupo(refresh_count, total_avaliable)
     else
       ifrefresh_x = 1
     end
-		sysLog('tupo state: '..ifrefresh_x)
-    if ifrefresh_x == -1 or j == 10 then
+    sysLog('tupo state: '..ifrefresh_x)
+    if ifrefresh_x == -1 or j == max_time+1 then
       sysLog(refresh_count..'次已打完')
       my_toast(id,refresh_count..'次已打完')
       tap(690, 270)
@@ -111,14 +111,17 @@ function tupo(refresh_count, total_avaliable)
       tap(all_enemy[tupo_order[j]][1]+187, all_enemy[tupo_order[j]][2]+131)
       sleepRandomLag(1000)
       start_combat(0)
-      sleepRandomLag(3000)
+			sleepRandomLag(3000)
+			tap(690, 270)
+      sleepRandomLag(2000)
+      tap(690, 270)
       sysLog('本轮已战斗'..j..'次...')
       my_toast(id,'本轮已战斗'..j..'次...')
       j = j + 1
       total_avaliable = total_avaliable -1
       sysLog('挑战卷: '..total_avaliable)
       if total_avaliable == 0 then
-				my_toast(id, "已打完挑战卷！")
+        my_toast(id, "已打完挑战卷！")
         lockDevice();
         lua_exit();
       end
@@ -145,4 +148,29 @@ function tupo(refresh_count, total_avaliable)
   tap(1230, 885) --点击确定
   sleepRandomLag(2000)
   tupo(refresh_count, total_avaliable)
+end
+
+
+function main_tupo(tupo_ret,tupo_results)
+  if tupo_ret==0 then	
+    toast("您选择了取消，停止脚本运行")
+    lua_exit()
+  end
+  enter_tupo()
+  accept_quest()
+  local tupo_avaliable_ocr = ocrText(dict, 650,1166,696,1203, {"0x37332e-0x505050"}, 92, 1, 1) -- 表示范围内横向搜索，以table形式返回识别到的所有结果及其坐标
+  local tupo_avaliable = 0
+  for k,v in pairs(tupo_avaliable_ocr) do
+    sysLog(string.format('{x=%d, y=%d, text=%s}', v.x, v.y, v.text))
+    tupo_avaliable = tupo_avaliable*10 + tonumber(v.text)
+  end
+  my_toast(id, '挑战卷个数: '..tupo_avaliable)
+  sysLog('挑战卷个数: '..tupo_avaliable)		
+  if tupo_results['100'] == '0' then
+    tupo(3, tupo_avaliable)
+  elseif tupo_results['100'] == '1' then
+    tupo(6, tupo_avaliable)
+  else
+    tupo(9, tupo_avaliable)
+  end
 end

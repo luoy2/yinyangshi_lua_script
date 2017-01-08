@@ -191,9 +191,9 @@ function team_leader(mark_case, member_number)
       x, y = findMultiColorInRegionFuzzy(0x272420,"0|13|0xe6cca0,2|-15|0x272420", 95, 1027-2,794-2,1027+2,794+2)
       --x, y = findMultiColorInRegionFuzzy(0x691007,"16|-32|0x2d2720,-8|-85|0xf3daa9,15|-198|0x272420", 85, 1034-5,991-5, 1034+5,991+5) --回目
       if x > -1 then
-        my_toast(id,'检测到回目')
+        --my_toast(id,'检测到回目')
       else
-        my_toast(id,'未检测到回目')
+        my_toast(id,'等待下一回合的标记')
         mSleep(20)
         if_other_round()
       end
@@ -295,24 +295,24 @@ function team_leader(mark_case, member_number)
     
     
     
-    function enter_yeyuanhuo()
-      local current_state = check_current_state()
-      if current_state == 'yeyuanhuo' then
-        my_toast(id, '进入业原火')
-        tap(1457, 770)
-        mSleep(500)
-        return enter_yeyuanhuo()
-      elseif current_state == 'yeyuanhuo_challenge' then
-        my_toast(id, '选择业原火难度界面')
-        return true
-      else
-        enter_tansuo()
-        my_toast(id, '在探索界面')
-        tap(334, 1448)
-        mSleep(500)
-        return enter_yeyuanhuo()
-      end
-    end
+function enter_yeyuanhuo()
+	local current_state = check_current_state()
+	if current_state == 'yeyuanhuo' then
+		my_toast(id, '进入业原火')
+		tap(1457, 770)
+		mSleep(500)
+		return enter_yeyuanhuo()
+	elseif current_state == 'yeyuanhuo_challenge' then
+		my_toast(id, '选择业原火难度界面')
+		return true
+	else
+		enter_tansuo()
+		my_toast(id, '在探索界面')
+		tap(334, 1448)
+		mSleep(500)
+		return enter_yeyuanhuo()
+	end
+end
     
     
     

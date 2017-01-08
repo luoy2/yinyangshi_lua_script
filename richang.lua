@@ -1,6 +1,7 @@
 function enter_main_function()
   local current_state = check_current_state()
   if current_state == 1 then
+	elseif current_state == 11 then
   elseif current_state == 21 then
     my_toast(id, '正在战斗中！等待完成战斗进入主界面。。')
 		end_combat(0)
@@ -23,15 +24,17 @@ function enter_main_function()
 		tap(x, y)
 		mSleep(3000)
 		return enter_main_function()
-	elseif current_state == 4 then
-		local redcross_x, redcross_y = myFindColor(右上红叉)
-		tap(redcross_x, redcross_y)
-		mSleep(1000)
-		return enter_main_function()
 	else
-		my_toast(id, '请手动进入主界面！')
-		mSleep(2000)
-		return enter_main_function()
+		local redcross_x, redcross_y = myFindColor(右上红叉)
+		if redcross_x > -1 then
+			tap(redcross_x, redcross_y)
+			mSleep(1000)
+			return enter_main_function()
+		else 
+			my_toast(id, '请手动进入主界面！')
+			mSleep(2000)
+			return enter_main_function()
+		end
 	end
 end
         
@@ -60,16 +63,20 @@ function give_friend_heart()
 			tap(song_x, song_y)
       song_t = song_t +1
       my_toast(id, '送心'..song_t..'/10')
+			mSleep(300)
 		elseif shou_x > -1 and shou_t < 10 then
 			tap(shou_x, shou_y)
 			shou_t = shou_t +1
 			my_toast(id, '收心'..shou_t..'/10')
+			mSleep(300)
 		else
 			swip(500, 955, 500, 475)
+			mSleep(300)
 		end
 	end
 end
 
+-----------------------------------------------------买厕纸--------------------------------------------------
 function buy_toilet_paper()
 	enter_main_function()
 	mSleep(1000)
@@ -98,5 +105,49 @@ function buy_toilet_paper()
 	end
 end
 	
------------------------------------------------------买厕纸--------------------------------------------------
+-----------------------------------------------------日常汇总--------------------------------------------------
 
+function sub_richang(richang_results)
+		if richang_results['100'] == '0' then
+			give_friend_heart()
+		elseif richang_results['100'] == '1' then
+			buy_toilet_paper()
+		end
+		mSleep(1000)
+		end
+
+function main_richang(richang_ret,richang_results)
+	if richang_ret==0 then	
+		toast("您选择了取消，停止脚本运行")
+		lua_exit()
+	end
+	sysLog(richang_results['101'])
+	if richang_results['101'] == '4' then
+		sub_richang(richang_results)
+		enter_main_function()
+		lua_exit()
+		--肝狗粮,
+	elseif richang_results['101'] == '0' then		
+		ts_ret,ts_results = showUI("tansuo.json")
+		sub_richang(richang_results)
+		return main_tansuo(ts_ret,ts_results)
+	elseif richang_results['101'] == '1' then			
+		tupo_ret,tupo_results = showUI("tupo.json")
+		sub_richang(richang_results)
+		return main_tupo(tupo_ret,tupo_results)
+	elseif richang_results['101'] == '2' then
+		yqfy_ret,yqfy_results = showUI("yqfy.json")
+		sub_richang(richang_results)
+		return main_yqfy(yqfy_ret,yqfy_results)
+	elseif richang_results['101'] == '3' then
+		enter_yeyuanhuo()
+		yyh_ret,yyh_results = showUI("yeyuanhuo.json")
+		sub_richang(richang_results)
+		return main_yeyuanhuo(yyh_ret,yyh_results)
+	end
+end
+		
+		
+		
+		
+		
