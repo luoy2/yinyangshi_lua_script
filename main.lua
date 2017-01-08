@@ -88,9 +88,7 @@ function main()
 end
 
 
---独眼小僧(1)
-
---main()
+main()
 
 --[[
 enter_main_function()
@@ -133,7 +131,8 @@ end
 
 
 
-function fy_one_monster(monster_chapter, skip_lines)
+function fy_one_monster(monster_chapter, skip_lines, model)
+	if type(elem) == "table" then 
 	enter_tansuo()
 	choose_chapter(monster_chapter)
 	enter_dungeon()
@@ -148,7 +147,7 @@ function fy_one_monster(monster_chapter, skip_lines)
 	my_toast(id, '封印完成')
 end
 
-fy_one_monster(fy_chapter['shouwu'])
+--fy_one_monster(fy_chapter['shouwu'], 0, 'easy')
 -----------------------------------------------------------------------------
 
 
