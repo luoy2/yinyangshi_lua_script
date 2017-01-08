@@ -432,16 +432,16 @@ end
 
 
 function main_tansuo(ts_ret, ts_results)
-if ts_ret==0 then	
-        toast("您选择了取消，停止脚本运行")
-        lua_exit()
-      end
-      local fight_times = tonumber(ts_results['99'])
-      local skip_lines = tonumber(ts_results['100'])
-      local search_times = tonumber(ts_results['101'])
-      if fight_times == 0 then
-        fight_times = 999999
-      end
-      tansuo(fight_times, search_times, skip_lines)
+	if ts_ret==0 then	
+		toast("您选择了取消，停止脚本运行")
+		lua_exit()
+	end
+	local fight_times = tonumber(ts_results['99'])
+	local skip_lines = tonumber(ts_results['100'])
+	local search_times = tonumber(ts_results['101'])
+	if fight_times == 0 then
+		fight_times = 999999
+	end
+	tansuo(fight_times, search_times, skip_lines)
 end
 

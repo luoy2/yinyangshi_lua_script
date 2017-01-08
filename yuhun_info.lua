@@ -116,31 +116,31 @@ function team_leader(mark_case, member_number)
         my_toast(id,'等待队友加入')
         team_leader(mark_case, member_number)
       end
-    else
-      if start_color > -1 then
-        my_toast(id, "开始队伍")
-        tap(1547, 1157)
-        if_outof_sushi()
-        custom_mark_combat(mark_case)
-        sleepRandomLag(1000)
-        while true do
-          accept_quest()
-          invite_color_1, y_2 = findColorInRegionFuzzy(0xdf6851, 95, 897, 876, 937, 897)
-          invite_color_2, y_3 = findColorInRegionFuzzy(0xf3b25e, 95, 1107, 870, 1133, 887)
-          if invite_color_1 > -1 and invite_color_2 > -1 then
-            toast ("重新邀请")
-            tap(1184, 877)
-            mSleep(2000)
-            break end
-            sleepRandomLag(1000)
-          end
-        else
-          sleepRandomLag(3000)
-          my_toast(id,'等待队友加入')
-          return team_leader(mark_case, member_number)
-        end
-      end
-    end
+	else
+		if start_color > -1 then
+			my_toast(id, "开始队伍")
+			tap(1547, 1157)
+			if_outof_sushi()
+			custom_mark_combat(mark_case)
+			sleepRandomLag(1000)
+			while true do
+				accept_quest()
+				invite_color_1, y_2 = findColorInRegionFuzzy(0xdf6851, 95, 897, 876, 937, 897)
+				invite_color_2, y_3 = findColorInRegionFuzzy(0xf3b25e, 95, 1107, 870, 1133, 887)
+				if invite_color_1 > -1 and invite_color_2 > -1 then
+					toast ("重新邀请")
+					tap(1184, 877)
+					mSleep(2000)
+				break end
+					sleepRandomLag(1000)
+			end
+		else
+				sleepRandomLag(3000)
+				my_toast(id,'等待队友加入')
+				return team_leader(mark_case, member_number)
+		end
+	end
+end
     
     
     
@@ -291,10 +291,7 @@ end
     
     
     -------------------------------------------业原火--------------------------------------
-    
-    
-    
-    
+
     
 function enter_yeyuanhuo()
 	local current_state = check_current_state()
@@ -317,36 +314,36 @@ end
     
     
     
-    function yeyuanhuo(times, difficulty)
-      if times == 0 then
-        lockDevice()
-        mSleep(200)
-        lua_exit()
-      end
-      --sysLog('yeyuanhuo')
-      enter_yeyuanhuo()
-      --确定进入探索
-      accept_quest()
-      my_toast(id, '开始挑战业原火')
-      choose_yeyuanhuo:case(difficulty)
-      mSleep(500)
-      tap(1527, 982)
-      mSleep(2000)
-      results = start_combat(0)
-      if results == 'win' then
-        times = times -1
-      end
-      return yeyuanhuo(times, difficulty)
-    end
-		
+function yeyuanhuo(times, difficulty)
+	if times == 0 then
+		lockDevice()
+		mSleep(200)
+		lua_exit()
+	end
+	--sysLog('yeyuanhuo')
+	enter_yeyuanhuo()
+	--确定进入探索
+	accept_quest()
+	my_toast(id, '开始挑战业原火')
+	choose_yeyuanhuo:case(difficulty)
+	mSleep(500)
+	tap(1527, 982)
+	mSleep(2000)
+	results = custom_mark_combat({2,2,3})
+	if results == 'win' then
+		times = times -1
+	end
+	return yeyuanhuo(times, difficulty)
+end
+
 		
 function main_yeyuanhuo(yyh_ret, yyh_results)
-      if yyh_ret==0 then	
-        toast("您选择了取消，停止脚本运行")
-        lua_exit()
-      end
-      local times = tonumber(yyh_results['100'])
-      local difficulty = tonumber(yyh_results['101'])+1
-      yeyuanhuo(times, difficulty)
-			end
+	if yyh_ret==0 then	
+		toast("您选择了取消，停止脚本运行")
+		lua_exit()
+	end
+	local times = tonumber(yyh_results['100'])
+	local difficulty = tonumber(yyh_results['101'])+1
+	yeyuanhuo(times, difficulty)
+end
     

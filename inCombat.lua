@@ -11,7 +11,7 @@ mark_cases = switch {
 	[4] = function() tap(1580, 535)	end,	--标记右边
 	[5] = function() first_mark()	end, --标记二口女
 	[6] = function() end,　-- 不标记
-	
+	----------yyh---------------
 }
 
 	

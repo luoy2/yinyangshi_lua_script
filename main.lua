@@ -97,6 +97,7 @@ function in_party()
 			sleepRandomLag(1000)
 	end
 end
+
 main()
 
 --[[
