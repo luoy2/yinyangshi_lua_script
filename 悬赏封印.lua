@@ -144,5 +144,9 @@ end
 --fy_order = {fy_chapter['hudiejing']}
 --fy_all(fy_order, 0)
 
+function find_mystery_monster(input_str)
+
+end
+
 
 

@@ -98,7 +98,7 @@ function in_party()
 	end
 end
 
---main()
+main()
 
 --[[
 enter_main_function()
