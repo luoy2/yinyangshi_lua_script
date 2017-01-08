@@ -103,19 +103,28 @@ function end_combat(tap_situation)
 		--combat_win = true
 		sysLog("战斗胜利")
 		tap(x_win, y_win) 
-		bool_val = true
+		local bool_val = true
 		while bool_val do
 			accept_quest()
-			x, y = findColorInRegionFuzzy(0x85100f, 85, 1015, 627, 1020, 632)
+			local x, y = findColorInRegionFuzzy(0x85100f, 85, 1015, 627, 1020, 632)
 			if x > -1 then
 				my_toast(id,"找到达摩1")
 				tap(1020, 850)
-				sleepRandomLag(100)
+				mSleep(200)
 				tap(1020, 850)
+				mSleep(1000)
+				x, y = findColorInRegionFuzzy(0x85100f, 85, 1015, 627, 1020, 632)
+				while x > -1 do
+				sysLog('还能找到达摩1')
+				tap(1020, 850)
+				mSleep(200)
+				x, y = findColorInRegionFuzzy(0x85100f, 85, 1015, 627, 1020, 632)
+				end
 				bool_val = false
 			else
 				sleepRandomLag(100)
 			end
+		
 		end
 		bool_val = true
 		while bool_val do
@@ -123,16 +132,19 @@ function end_combat(tap_situation)
 			local x, y = myFindColor(达摩2)
 			if x > -1 then
 				my_toast(id,"找到达摩2")
+				tap(x, y)
 				sleepRandomLag(1000) 
-				tap(x, y)
-				sleepRandomLag(100)
-				tap(x, y)
-				sleepRandomLag(100)
-				tap(x, y)
-				bool_val = false
+				x, y = myFindColor(达摩2)
 			else
 				sleepRandomLag(100)
 			end
+			while x > -1 do
+			sysLog('还能找到达摩2')
+			tap(x, y)
+			sleepRandomLag(1000) 
+			x, y = myFindColor(达摩2)
+			end
+			bool_val = false
 		end
 		my_toast(id,"结束战斗")
   else

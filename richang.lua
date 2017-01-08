@@ -10,12 +10,9 @@ function enter_main_function()
   elseif current_state == 22 then
     my_toast(id, '在探索副本')
     tap(80, 100)												--退出探索本
-    mSleep(1500)
+    mSleep(1000)
     tap(1244, 842)
-    mSleep(2000)
-    tap(1244, 842)
-    mSleep(3000)
-    enter_party()
+    mSleep(1000)
     return enter_main_function()
 	elseif current_state == 3 then
 		my_toast(id, '在探索界面')

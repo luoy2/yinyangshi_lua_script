@@ -8,6 +8,14 @@ f_seven = {0xded9c7,"2|-1|0xcfc9b8,7|-2|0xe7e2cf,10|1|0xf0ebd8,9|5|0xdad4c2,7|9|
 f_slash = {0xd2ccbb,"-1|2|0xa49d8e,-2|4|0xede7d5,-3|6|0xa59e8f,-4|8|0xd2ccbb,-5|10|0xa9a293,-7|14|0xb4ae9e,-9|18|0xc7c0b0,-10|21|0xa29b8c,13|23|0xd6d0bf",85}
 f_num = {f_zero, f_one, f_two, f_three, f_four,f_five, f_seven}
 
+fy_chapter = {
+shouwu = {13, 0}, shantu = {16, 0}, duyan = {11,0}, chounv = {10,0}, jue = {10,0}, zhoushen = {8, 0}, 
+jiumingmao ={18, 1}, hudiejing = {6, 0}, taohuayao = 'yh_3'}
+
+
+
+
+-------------------------------------------------------------------------------
 
 function xsFindColor(color, position)
 	accept_quest()
@@ -52,7 +60,7 @@ function search_for_fy(fight_times, search_times, skip_lines)
       my_toast(id, '找到封印怪')
       --sysLog('x:'..exp_x..' y:'..exp_y)
       result = '找到封印怪'
-      toast("s:" .. result .. "time:" .. mTime() - qTime)
+      --toast("s:" .. result .. "time:" .. mTime() - qTime)
 			tap(f_x, f_y)
 			if_outof_sushi()
 			mSleep(500)
@@ -67,11 +75,11 @@ function search_for_fy(fight_times, search_times, skip_lines)
 			my_toast(id, '可以准备')
 			if_change(slot, skip_lines)
 			start_combat(0)
-			mSleep(5000)
+			mSleep(2000)
 			if_fight = true
     else
       result = '未找到'
-      toast("s:" .. result .. "time:" .. mTime() - qTime)
+      --toast("s:" .. result .. "time:" .. mTime() - qTime)
     end
     count = count + 1
   end
@@ -83,8 +91,58 @@ function slow_next_scene()
   my_swip(1977, 1346, 1700, 1346, 10)
 end
 
+function one_dungeon_fengyin(skip_lines)
+	local bool_table = {}
+	for find_time = 1, 8, 1 do
+		slow_next_scene()  --4次
+		table.insert(bool_table, search_for_fy(0, 3, skip_lines))
+	end
+	for _,v in pairs(bool_table) do
+		if v == true then
+			sysLog('此轮有找到怪')
+			return true
+		else
+			sysLog('此轮没有找到怪')
+		end
+	end
+	return false
+end
 
 
 
 
-fy_chapter = {shouwu = 13, shantu = 16, duyan = 11, taohuayao = 'yh_3', }
+function fy_one_monster(monster_chapter, skip_lines, difficuty)
+	enter_tansuo()
+	choose_chapter(monster_chapter)
+	enter_dungeon(difficuty)
+	mSleep(3000)
+	while one_dungeon_fengyin(skip_lines) do 	
+		enter_tansuo()
+		local currentchapter_x, currentchapter_y = findMultiColorInRegionFuzzy(0xa88341,"0|-6|0x4c3828,0|9|0xd9d0bf", 95, 835, 534, 1173, 859)
+		if currentchapter_x > -1 then
+			sysLog('kuajierukou')
+			tap(1010, 710)
+			mSleep(1000)
+		else
+			choose_chapter(monster_chapter)
+		end
+		enter_dungeon(difficuty)
+	end
+	my_toast(id, '封印一次完成')
+end
+
+function fy_all(fy_order, skip_lines)
+	for _, v in pairs(fy_order) do
+		fy_one_monster(v[1], skip_lines, v[2])
+	end
+		sysLog('任务结束')
+		enter_main_function()
+end
+
+
+
+--fy_order = {fy_chapter['hudiejing']}
+--fy_all(fy_order, 0)
+
+
+

@@ -41,15 +41,8 @@ function main()
       
       -------------------------------------------石距--------------------------------------
     elseif results['100'] == '1' then
-      --dialog("开始打章鱼，请于五秒内进入主界面")
-      sleepRandomLag(500)
-      enter_party()
-      swip(400, 1250, 400, 600)
-      sleepRandomLag(2000)
-      tap(400, 1030)
-      refresh()
+			dialog("功能开发中， 请关注更新日志，将于最近上线")
   
-      
       -------------------------------------------御魂10--------------------------------------
     elseif results['100'] == '2' then
       yh_ret,yh_results = showUI("yuhun.json")
@@ -87,7 +80,23 @@ function main()
   
 end
 
-
+function in_party()
+	local statue = party_statue()
+	while statue == 1 do
+			mSleep(500)
+			my_toast(id, '等待队伍开始')
+			statue = party_statue()
+	end
+		if statue == 2 then
+			my_toast(id, '进入战斗')
+			mSleep(500)
+		else
+			my_toast(id, '队长跑了,自己开始队伍')
+			tap(1547, 1157)
+			if_outof_sushi()
+			sleepRandomLag(1000)
+	end
+end
 main()
 
 --[[
@@ -111,45 +120,8 @@ if feng_x > -1 then tap(feng_x, feng_y) else sysLog('couldnt find feng') end
 
 ------------------------------------------------------------------------------
 
-function one_dungeon_fengyin(skip_lines)
-	local bool_table = {}
-	for find_time = 1, 6, 1 do
-		slow_next_scene()  --4次
-		table.insert(bool_table, search_for_fy(0, 10, skip_lines))
-	end
-	for _,v in pairs(bool_table) do
-		if v == true then
-			sysLog('此轮有找到怪')
-			return true
-		else
-			sysLog('此轮没有找到怪')
-		end
-	end
-	return false
-end
 
-
-
-
-function fy_one_monster(monster_chapter, skip_lines, model)
-	if type(elem) == "table" then 
-	enter_tansuo()
-	choose_chapter(monster_chapter)
-	enter_dungeon()
-	one_dungeon_fengyin(0, 5, skip_lines)
-	mSleep(3000)
-	while one_dungeon_fengyin(0, 5, 0) do 	
-		enter_tansuo()
-		choose_chapter(monster_chapter)
-		enter_dungeon()
-	end
-	enter_main_function()
-	my_toast(id, '封印完成')
-end
-
---fy_one_monster(fy_chapter['shouwu'], 0, 'easy')
 -----------------------------------------------------------------------------
-
 
 --[[
 find_yaoqi(海坊主)

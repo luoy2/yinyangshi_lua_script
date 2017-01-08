@@ -114,7 +114,7 @@ end
 
 function choose_chapter(chapter)	
   reset_scroll()
-  x  = math.ceil(chapter/4)
+  local x  = math.ceil(chapter/4)
   if chapter <=16 then
     sysLog(x-1)
     scroll(x-1)
@@ -126,11 +126,11 @@ function choose_chapter(chapter)
 end
 
 
-function enter_dungeon(mode)
+function enter_dungeon(difficuty)
   accept_quest()
-  x, y = findMultiColorInRegionFuzzy(0xe8d4cf,"26|-2|0x723152,2|24|0x753743,0|-27|0x672f38,-31|2|0x763b3f", 95, 1675, 410, 1706, 437) --xx
-  if x > -1 then
-    if mode == 'easy' then
+  local x, y = findMultiColorInRegionFuzzy(0xe8d4cf,"26|-2|0x723152,2|24|0x753743,0|-27|0x672f38,-31|2|0x763b3f", 95, 1675, 410, 1706, 437) --xx
+	if x > -1 then
+    if difficuty == 1 then
       tap(542, 547)
       mSleep(500)
     else
@@ -140,7 +140,7 @@ function enter_dungeon(mode)
     tap(1538, 1045)
   else
     mSleep(500)
-		return enter_dungeon()
+		return enter_dungeon(difficuty)
   end
 end
 
@@ -374,7 +374,7 @@ function pick_loot(fight_times, search_times, skip_lines)
     my_toast(id, '找到小纸人...')
     tap(loot_x, loot_y)
     mSleep(1000)
-    tap(loot_x, loot_y)
+    tap(1635, 1156)
     mSleep(2000)
     return pick_loot(fight_times, search_times, skip_lines)
   else

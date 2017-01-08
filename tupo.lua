@@ -158,7 +158,7 @@ function main_tupo(tupo_ret,tupo_results)
   end
   enter_tupo()
   accept_quest()
-  local tupo_avaliable_ocr = ocrText(dict, 650,1166,696,1203, {"0x37332e-0x505050"}, 92, 1, 1) -- 表示范围内横向搜索，以table形式返回识别到的所有结果及其坐标
+  local tupo_avaliable_ocr = ocrText(dict, 650,1166,696,1203, {"0x37332e-0x505050"}, 95, 1, 1) -- 表示范围内横向搜索，以table形式返回识别到的所有结果及其坐标
   local tupo_avaliable = 0
   for k,v in pairs(tupo_avaliable_ocr) do
     sysLog(string.format('{x=%d, y=%d, text=%s}', v.x, v.y, v.text))
