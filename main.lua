@@ -98,7 +98,7 @@ function in_party()
 	end
 end
 
-main()
+--main()
 
 --[[
 enter_main_function()
@@ -112,11 +112,11 @@ if feng_x > -1 then tap(feng_x, feng_y) else sysLog('couldnt find feng') end
 
 
 
+斗鱼 = {0x3d3934,"0|12|0x34312c,7|-6|0xccc4ba,13|-3|0x33302b,7|6|0x2d2925,12|7|0x58544e,20|5|0x4e4a45,23|9|0x4c4843",90,1245,726,1588,778}
+太鼓 = {0x807a73,"6|0|0x3e3a36,4|3|0x494540,0|8|0x625e58,10|7|0x37342f,13|5|0xc9c1b8,19|5|0x36322e,19|0|0x312e29,18|15|0x3b3732,8|-12|0x5a554f",90,1245,726,1588,778}
 
-
-
-
-
+local d_x, d_y = myFindColor(斗鱼)
+local t_x, t_y = myFindColor(太鼓)
 
 
 ------------------------------------------------------------------------------
