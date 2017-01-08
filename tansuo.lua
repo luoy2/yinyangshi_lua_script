@@ -39,28 +39,37 @@ change_ss_tap = switch {
 function enter_tansuo()
   local current_state = check_current_state()
   if current_state == 1 then
-    tap(1900, 1210)
-    sleepRandomLag(2000)
-    tap(1900, 1210)
-    sleepRandomLag(2000)
-    tap(1900, 1210)
-    sleepRandomLag(2000)
-    accept_quest()
+		local tansuo_x, tansuo_y = myFindColor(探索灯笼)
+		sysLog(tansuo_x)
+		sysLog(tansuo_y)
+		if tansuo_x > -1 then
+			sysLog('点击试试')
+			tap(tansuo_x+15, tansuo_y+45)
+			mSleep(3000)
+			return enter_tansuo()--进入探索页面
+		else
+			my_toast(id, '没有找到探索，请手动进入探索')
+			mSleep(2000)
+			return enter_tansuo()
+		end
+	elseif current_state == 'machi' then
     local machi_x, machi_y = findMultiColorInRegionFuzzy(0xbeb6b3,"3|25|0xb9b5c3,1|40|0x141412,-1|228|0x979793", 95, 1540,460,1550,480)
     if machi_x > -1 then
       my_toast(id, '进入庭院')
       tap(1545, 575)
-      mSleep(1000)
+      mSleep(2000)
+			my_swip(1800, 1250, 200, 1250, 50)
       return enter_tansuo()
+		else
+			my_toast(id, '没有找到主界面入口，麻烦手动进入')
+			mSleep(2000)
+			return enter_tansuo()
     end
-    tap(579, 276)
-		mSleep(3000)
-		return enter_tansuo()--进入探索页面
   elseif current_state == 21 then
     my_toast(id, '正在战斗中！请完成战斗后进入探索界面开启脚本！')
 		end_combat(0)
 		mSleep(2000)
-  return enter_tansuo()
+		return enter_tansuo()
 	elseif current_state == 22 then
 		my_toast(id, '在探索副本！')
 		tap(80, 100)												--退出探索本
@@ -69,14 +78,17 @@ function enter_tansuo()
 		return enter_tansuo()
 	elseif current_state == 3 then
 		my_toast(id, '已经在探索界面了！')
-	elseif current_state == 4 then
-		local red_cross_x, red_cross_y = myFindColor(右上红叉)
-		tap(red_cross_x, red_cross_y)
-		return enter_tansuo()
 	else
-		my_toast(id, '请手动进入探索界面！')
-		mSleep(2000)
-		return enter_tansuo()
+		local red_cross_x, red_cross_y = myFindColor(右上红叉)
+		if red_cross_x > -1 then
+			tap(red_cross_x, red_cross_y)
+			mSleep(1000)
+			return enter_tansuo()
+		else
+			my_toast(id, '请手动进入探索界面！')
+			mSleep(2000)
+			return enter_tansuo()
+		end
 end
 end
 
@@ -102,7 +114,7 @@ end
 
 function choose_chapter(chapter)	
   reset_scroll()
-  x  = math.ceil(chapter/4)
+  local x  = math.ceil(chapter/4)
   if chapter <=16 then
     sysLog(x-1)
     scroll(x-1)
@@ -114,11 +126,11 @@ function choose_chapter(chapter)
 end
 
 
-function enter_dungeon(mode)
+function enter_dungeon(difficuty)
   accept_quest()
-  x, y = findMultiColorInRegionFuzzy(0xe8d4cf,"26|-2|0x723152,2|24|0x753743,0|-27|0x672f38,-31|2|0x763b3f", 95, 1675, 410, 1706, 437) --xx
-  if x > -1 then
-    if mode == 'easy' then
+  local x, y = findMultiColorInRegionFuzzy(0xe8d4cf,"26|-2|0x723152,2|24|0x753743,0|-27|0x672f38,-31|2|0x763b3f", 95, 1675, 410, 1706, 437) --xx
+	if x > -1 then
+    if difficuty == 1 then
       tap(542, 547)
       mSleep(500)
     else
@@ -128,7 +140,7 @@ function enter_dungeon(mode)
     tap(1538, 1045)
   else
     mSleep(500)
-		return enter_dungeon()
+		return enter_dungeon(difficuty)
   end
 end
 
@@ -321,7 +333,6 @@ function search_for_exp(fight_times, search_times, skip_lines)
       toast("s:" .. result .. "time:" .. mTime() - qTime)
     end
     count = count + 1
-		--sysLog('count: '..count..'total: '..times)
   end
 end
 
@@ -363,7 +374,7 @@ function pick_loot(fight_times, search_times, skip_lines)
     my_toast(id, '找到小纸人...')
     tap(loot_x, loot_y)
     mSleep(1000)
-    tap(loot_x, loot_y)
+    tap(1635, 1156)
     mSleep(2000)
     return pick_loot(fight_times, search_times, skip_lines)
   else
@@ -420,4 +431,17 @@ function tansuo(fight_times, search_times, skip_lines)
 end
 
 
+function main_tansuo(ts_ret, ts_results)
+	if ts_ret==0 then	
+		toast("您选择了取消，停止脚本运行")
+		lua_exit()
+	end
+	local fight_times = tonumber(ts_results['99'])
+	local skip_lines = tonumber(ts_results['100'])
+	local search_times = tonumber(ts_results['101'])
+	if fight_times == 0 then
+		fight_times = 999999
+	end
+	tansuo(fight_times, search_times, skip_lines)
+end
 

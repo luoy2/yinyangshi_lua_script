@@ -48,7 +48,7 @@ end
 
 
 function my_toast(id, my_string)
-  showHUD(id, my_string ,38,"0xffffff66",'hud1.png',0,160,116,420,40)    
+  showHUD(id, my_string ,38,"0xffffff66",'hud1.png',0,170,116,415,40)    
 end
 
 
@@ -65,56 +65,12 @@ end
 
 
 
-
-
 function my_exist(lock)
   if lock == true then
     lockDevice()
     lua_exit()
   else
     lua_exit();
-  end
-end
-
-
--- 格式化输出table（力荐）
-printr = function (root, notPrint, params)
-  if not _isDebug then
-    do return end
-  end
-  local rootType = type(root)
-  if rootType == "table" then
-    local tag = params and params.tag or "Table detail:>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
-    local cache = {  [root] = "." }
-    local isHead = false
-    local function _dump(t, space, name)
-      local temp = {}
-      if not isHead then
-        temp = {tag}
-        isHead = true
-      end
-      for k,v in pairs(t) do
-        local key = tostring(k)
-        if cache[v] then
-          tinsert(temp, "+" .. key .. " {" .. cache[v] .. "}")
-        elseif type(v) == "table" then
-          local new_key = name .. "." .. key
-          cache[v] = new_key
-          tinsert(temp, "+" .. key .. _dump(v, space .. (next(t, k) and "|" or " " ) .. srep(" ", #key), new_key))
-        else
-          tinsert(temp, "+" .. key .. " [" .. tostring(v) .. "]")
-        end
-      end
-      return tconcat(temp, "\n" .. space)
-    end
-    if not notPrint then
-      print(_dump(root, "", ""))
-      print("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
-    else
-      return _dump(root, "", "")
-    end
-  else
-    print("[printr error]: not support type")
   end
 end
 
@@ -144,11 +100,11 @@ function tap(x, y)
   accept_quest()
   math.randomseed(tostring(os.time()):reverse():sub(1, 6))  --设置随机数种子
   local index = math.random(1,5)
-  x = x + math.random(-2,2)
-  y = y + math.random(-2,2)
-  touchDown(index,x, y)
+  local rand_x = x + math.random(-2,2)
+  local rand_y = y + math.random(-2,2)
+  touchDown(index,rand_x, rand_y)
   mSleep(math.random(60,80))                --某些特殊情况需要增大延迟才能模拟点击效果
-  touchUp(index, x, y)
+  touchUp(index, rand_x, rand_y)
   mSleep(20)
 end
 
@@ -177,6 +133,14 @@ function swip(x1,y1,x2,y2)
   touchMove(index, x2, y2)
   mSleep(30)
   touchUp(index, x2, y2)
+end
+
+function my_swip(x1, y1, x2, y2, speed)
+	local new = pos:new(x1, y1)
+	local move = {x=x2, y=y2}
+	local step = 28
+	local sleep1,sleep2 = 500,20
+	new:touchMoveTo(move,step,sleep1,sleep2)
 end
 
 --分割@字符串函数
@@ -294,7 +258,16 @@ function check_current_state()
   if main_x > -1 then        
     sysLog('当前处于庭院或者町中。。。')
     my_toast(id, '当前处于庭院或者町中。。。')
-    return 1
+		my_swip(1800, 1250, 200, 1250, 50)
+		local machi_x, machi_y = findMultiColorInRegionFuzzy(0xbeb6b3,"3|25|0xb9b5c3,1|40|0x141412,-1|228|0x979793", 95, 1540,460,1550,480)
+    if machi_x > -1 then
+			sysLog('当前处于町中。。。')
+      return 'machi'
+		else
+			sysLog('当前处于庭院')
+			return 1
+    end
+
   elseif intansuo_x > -1 then
     if incombat_x > -1 then
       sysLog("当前处于战斗中。。。")
@@ -310,17 +283,20 @@ function check_current_state()
     return 3
   elseif tupo_x > -1 then
     sysLog("当前处于突破界面")
-    return 4
+    return 'tupo'
   elseif intansuo_x > -1 then
     if incombat_x > -1 then
       sysLog("当前处于御魂中。。。")
     end
     return 5
 	elseif yeyuanhuo_x > -1 then
+		sysLog('yeyuanhuo')
     return 'yeyuanhuo'
 	elseif yeyuanhuo_challenge_x > -1 then
+		sysLog('yeyuanhuo_challenge')
 		return 'yeyuanhuo_challenge'
 	elseif party_x > -1 then
+		sysLog('party')
 		return 'party'
 	elseif tap_exit_x > -1 then
 		my_toast(id, '稍等')

@@ -11,7 +11,7 @@ mark_cases = switch {
 	[4] = function() tap(1580, 535)	end,	--标记右边
 	[5] = function() first_mark()	end, --标记二口女
 	[6] = function() end,　-- 不标记
-	
+	----------yyh---------------
 }
 
 	
@@ -21,10 +21,10 @@ function if_mark(tap_situation)
 		accept_quest()
 		x, y = findMultiColorInRegionFuzzy(0xf9936a,"-2|-4|0xfb826a,7|-4|0xfe8966,-10|-4|0xff9863", 95, 0, 0, 2047, 1535)
 		if x > -1 then
-			my_toast(id,'检测到标记')
+			my_toast(id,'为您标记好了')
 			mSleep(2000)
 		else
-			my_toast(id,'标记case'..tap_situation)
+			--my_toast(id,'标记case'..tap_situation)
 			mark_cases:case(tap_situation)
 			mSleep(20)
 			return if_mark(tap_situation)
@@ -60,7 +60,7 @@ function if_start_combat()
 	x, y = findMultiColorInRegionFuzzy(0x3b3233,"18|-4|0xdec198,26|15|0x3b3233,29|-36|0x3b3233", 95, 1770-2, 1278-2, 1770+2, 1278+2)  --已经准备
 	if x > -1 then
 		sleepRandomLag(500)
-		my_toast(id, '等待队友准备')
+		my_toast(id, '等待队友准备中')
 		if_start_combat()
 	end
 end
@@ -72,13 +72,13 @@ function ready()
 	accept_quest()
   local ready_x, ready_y = findMultiColorInRegionFuzzy(0xfffffa,"5|-39|0xfffff9,27|-34|0xfff3d1,27|-1|0xfffaeb,51|-17|0xfff2d0", 90, 1789, 1274, 1798, 1283)
 	if ready_x > -1 then
-    my_toast(id,"找到准备")
+    my_toast(id,"您已经准备好了")
     tap(1879, 1285)
 		mSleep(1000)
 		if_start_combat()
 		sleepRandomLag(200)
   else
-    my_toast(id,"未找到准备")
+    my_toast(id,"准备开始战斗")
     sleepRandomLag(500)
     ready()
   end
@@ -103,19 +103,28 @@ function end_combat(tap_situation)
 		--combat_win = true
 		sysLog("战斗胜利")
 		tap(x_win, y_win) 
-		bool_val = true
+		local bool_val = true
 		while bool_val do
 			accept_quest()
-			x, y = findColorInRegionFuzzy(0x85100f, 85, 1015, 627, 1020, 632)
+			local x, y = findColorInRegionFuzzy(0x85100f, 85, 1015, 627, 1020, 632)
 			if x > -1 then
 				my_toast(id,"找到达摩1")
 				tap(1020, 850)
-				sleepRandomLag(100)
+				mSleep(200)
 				tap(1020, 850)
+				mSleep(1000)
+				x, y = findColorInRegionFuzzy(0x85100f, 85, 1015, 627, 1020, 632)
+				while x > -1 do
+				sysLog('还能找到达摩1')
+				tap(1020, 850)
+				mSleep(200)
+				x, y = findColorInRegionFuzzy(0x85100f, 85, 1015, 627, 1020, 632)
+				end
 				bool_val = false
 			else
 				sleepRandomLag(100)
 			end
+		
 		end
 		bool_val = true
 		while bool_val do
@@ -123,16 +132,19 @@ function end_combat(tap_situation)
 			local x, y = myFindColor(达摩2)
 			if x > -1 then
 				my_toast(id,"找到达摩2")
+				tap(x, y)
 				sleepRandomLag(1000) 
-				tap(x, y)
-				sleepRandomLag(100)
-				tap(x, y)
-				sleepRandomLag(100)
-				tap(x, y)
-				bool_val = false
+				x, y = myFindColor(达摩2)
 			else
 				sleepRandomLag(100)
 			end
+			while x > -1 do
+			sysLog('还能找到达摩2')
+			tap(x, y)
+			sleepRandomLag(1000) 
+			x, y = myFindColor(达摩2)
+			end
+			bool_val = false
 		end
 		my_toast(id,"结束战斗")
   else
